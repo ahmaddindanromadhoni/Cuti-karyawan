@@ -1,0 +1,133 @@
+<!-- <?php
+          include '../connection.php';
+          $sql = mysqli_query($conn, "SELECT id, jarak, keterangan, COUNT(IF(keterangan='1',1,NULL))AS mendapatkan, COUNT(IF(keterangan='0',1,NULL)) AS tidakmendapatkan, COUNT(*) AS kesimpulan FROM tb_sort GROUP BY keterangan HAVING(COUNT(kesimpulan)>0)");
+
+          $hasilmendapatkan = '';
+          $hasiltidakmendapatkan = '';
+          $katmendapatkan = '';
+          $kattidakmendapatkan = '';
+          $kategori = '';
+          $jumlahmendapatkan = '';
+          $jumlahtidakmendapatkan = '';
+
+          while ($data = mysqli_fetch_array($sql)) {
+            $keterangan[] = $data['keterangan'];
+            $mendapatkan[] = $data['mendapatkan'];
+            $tidakmendapatkan[] = $data['tidakmendapatkan'];
+            $kesimpulan[] = $data['kesimpulan'];
+            $d = $data['mendapatkan'];
+            $e = $data['tidakmendapatkan'];
+          }
+
+          if ($kesimpulan[0] == $e && $keterangan[0] == '0') {
+            $kategori = 'Tidak Mendapatkan Bantuan';
+          } elseif ($kesimpulan[0] == $d && $keterangan[0] == '1') {
+            $kategori = 'Mendapatkan Bantuan';
+          } elseif ($kesimpulan[0] > $kesimpulan[1] && $keterangan[0] == '1') {
+            $kategori = 'Mendapatkan Bantuan';
+          } elseif ($kesimpulan[0] > $kesimpulan[1] && $keterangan[0] == '0') {
+            $kategori = 'Tidak Mendapatkan Bantuan';
+          } elseif ($kesimpulan[1] > $kesimpulan[0] && $keterangan[1] == '1') {
+            $kategori = 'Mendapatkan Bantuan';
+          } elseif ($kesimpulan[1] > $kesimpulan[0] && $keterangan[1] == '0') {
+            $kategori = 'Tidak Mendapatkan Bantuan';
+          } elseif ($kesimpulan[0] == $kesimpulan[1]) {
+            $kategori = 'DIPERTIMBANGKAN';
+          } else {
+            $kategori = '';
+          }
+
+          if ($d > $e && $keterangan[0] == '1') {
+            $jumlahlolos = $d;
+            $jumlahtidaklolos = '0';
+          } elseif ($e > $d && $keterangan[0] == '0') {
+            $jumlahlolos = '0';
+            $jumlahtidaklolos = $e;
+          } elseif ($kesimpulan[0] > $kesimpulan[1] && $keterangan[0] == '1') {
+            $jumlahlolos = $kesimpulan[0];
+            $jumlahtidaklolos = $kesimpulan[1];
+          } elseif ($kesimpulan[0] > $kesimpulan[1] && $keterangan[0] == '0') {
+            $jumlahlolos = $kesimpulan[1];
+            $jumlahtidaklolos = $kesimpulan[0];
+          } elseif ($kesimpulan[1] > $kesimpulan[0] && $keterangan[1] == '1') {
+            $jumlahlolos = $kesimpulan[1];
+            $jumlahtidaklolos = $kesimpulan[0];
+          } elseif ($kesimpulan[1] > $kesimpulan[0] && $keterangan[1] == '0') {
+            $jumlahlolos = $kesimpulan[0];
+            $jumlahtidaklolos = $kesimpulan[1];
+          } elseif ($kesimpulan[0] == $kesimpulan[1]) {
+            $jumlahlolos = $kesimpulan[0];
+            $jumlahtidaklolos = $kesimpulan[1];
+          } else {
+            $jumlahlolos = '';
+            $jumlahtidaklolos = '';
+          }
+
+          echo "<center style='margin-top:20px'>
+    <div class='container'>
+    <div class='col-xl-12 col-md-12 sm-12 p-100' style='margin-bottom:20px'>
+      <div class='card border-left-warning shadow h-100 py-2'>
+        <div class='card-body'>
+          <div class='row no-gutters align-items-center'>
+            <div class='col mr-2'>
+              <div class='text-xs font-weight-bold text-success text-uppercase mb-1'></div>
+              <div class='h5 mb-0 font-weight-bold text-gray-800'>Nilai Parameter K = $k</div>
+            </div>
+            <div class='col-auto'>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class='row'>
+      <div class='col-xl-6 col-md-6 sm-12'>
+        <div class='card border-left-success shadow h-100 py-2'>
+          <div class='card-body'>
+            <div class='row no-gutters align-items-center'>
+              <div class='col mr-2'>
+                <div class='text-xs font-weight-bold text-success text-uppercase mb-1'>Siswa Yang Mendapatkan Bantuan</div>
+                <div class='h5 mb-0 font-weight-bold text-gray-800'> $jumlahlolos Siswa</div>
+              </div>
+              <div class='col-auto'>
+                <i class='fas fa-users fa-4x text-gray-300'></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class='col-xl-6 col-md-6 sm-12'>
+        <div class='card border-left-danger shadow h-100 py-2'>
+          <div class='card-body'>
+            <div class='row no-gutters align-items-center'>
+              <div class='col mr-2'>
+                <div class='text-xs font-weight-bold text-danger text-uppercase mb-1'>Siswa Yang Tidak Mendapatkan Bantuan</div>
+                <div class='h5 mb-0 font-weight-bold text-gray-800'> $jumlahtidaklolos Siswa</div>
+              </div>
+              <div class='col-auto'>
+                <i class='fas fa-users fa-4x text-gray-300'></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class='col-xl-12 col-md-12 sm-12 p-100' style='margin-bottom:20px; margin-top:20px'>
+      <div class='card border-left-warning shadow h-100 py-2'>
+        <div class='card-body'>
+          <div class='row no-gutters align-items-center'>
+            <div class='col mr-2'>
+              <div class='text-xs font-weight-bold text-success text-uppercase mb-1'></div>
+              <div class='h5 mb-0 font-weight-bold text-gray-800'>Jadi, Dari Hasil Perhitungan K-Nearest Neighbor, Status Calon Siswa Yang Bernama $nama adalah <div class='text-success'>$kategori</div></div>
+            </div>
+            <div class='col-auto'>
+            <i class='fas fa-user fa-4x text-gray-300'></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    </center>";
+
+          mysqli_query($conn, "UPDATE tb_hasil SET nama = '$nama', pekerjaan_ayah = '$pekerjaanayah', pendapatan_ayah = '$pendapatanayah', bobot_pendapatan_ayah = '$bobotpendapatanayah',pekerjaan_ibu = '$pekerjaanibu',pendapatan_ibu = '$pendapatanibu',bobot_pendapatan_ibu = '$bobotpendapatanibu', jumlah_saudara = '$jumlahsaudara',bobot_saudara = '$bobotsaudara',prestasi_akedemik = '$prestasiakedemik',keterangan = '$kategori' WHERE nis = '$nis'");
+
+          ?> -->
